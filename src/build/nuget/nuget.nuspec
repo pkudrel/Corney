@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<package xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>Corney</id>
+    <version>{Version}</version>
+    <authors>Piotr Kudrel</authors>
+    <owners>DenebLab</owners>
+    <licenseUrl>http://antypirat.info/</licenseUrl>
+    <projectUrl>http://antypirat.info/</projectUrl>
+    <iconUrl>http://antypirat.info/wp-content/uploads/2015/05/APP-PL-logo-new.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>SiteScraper</description>
+    <tags>Anti Piracy</tags>
+  </metadata>
+</package>

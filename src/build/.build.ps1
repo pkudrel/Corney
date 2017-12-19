@@ -152,10 +152,10 @@ task Marge  {
 		Copy-Item "$($p.exe).config"  -Destination $margedDir 
 		
 		
-		$src = "$scriptsPath/nlog/$($p.name).NLog.config"
-		$dst = "$margedDir/NLog.config"
-		"Copy fixed version NLog.config; Src: $src ; Dst: $dst "
-		Copy-Item   $src  -Destination $dst -Force
+		#$src = "$scriptsPath/nlog/$($p.name).NLog.config"
+		#$dst = "$margedDir/NLog.config"
+		#"Copy fixed version NLog.config; Src: $src ; Dst: $dst "
+		#Copy-Item   $src  -Destination $dst -Force
 
 		
 		if([System.IO.File]::Exists("NLog.config")){
@@ -167,13 +167,13 @@ task Marge  {
 	}
 	
 	# fix for nlog
-	$src = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.build,  "ManualEvaluator.Desktop", "NLog.Windows.Forms.dll" )
-	$dst = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.marge,   "ManualEvaluator.Desktop" )
-	Copy-Item   $src  -Destination $dst -Force
+	#$src = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.build,  "ManualEvaluator.Desktop", "NLog.Windows.Forms.dll" )
+	#$dst = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.marge,   "ManualEvaluator.Desktop" )
+	#Copy-Item   $src  -Destination $dst -Force
 
-	$src = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.build,  "SiteScraper.Desktop", "NLog.Windows.Forms.dll" )
-	$dst = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.marge,   "SiteScraper.Desktop" )
-	Copy-Item   $src  -Destination $dst -Force
+	#$src = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.build,  "SiteScraper.Desktop", "NLog.Windows.Forms.dll" )
+	#$dst = [System.IO.Path]::Combine( $buildTmpDir , $Dirs.marge,   "SiteScraper.Desktop" )
+	#Copy-Item   $src  -Destination $dst -Force
 
 }
 

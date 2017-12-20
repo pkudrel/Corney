@@ -5,22 +5,20 @@ using Corney.Core;
 using Corney.Core.Common.App;
 using Corney.Core.Common.App.ReqRes;
 using Corney.Core.Common.Infrastructure;
+using Corney.Core.Features.Cron.ReqRes;
 using MediatR;
 using NLog;
 using Topshelf;
-using Stopwatch = System.Diagnostics.Stopwatch;
+using Topshelf.Autofac;
 
 namespace Corney
 {
     internal static class Program
     {
         private static readonly Logger _log = LogManager.GetCurrentClassLogger();
-        private static readonly Stopwatch _sw = new Stopwatch();
 
-
-        public static void Main()
+        public static void Main2()
         {
-            _sw.Start();
             var res = MainLowLevel();
             if (res.Error) return;
             MainAsync(res.Instance.Value).GetAwaiter().GetResult();
@@ -76,21 +74,39 @@ namespace Corney
                             // Any configuration checks, initializations should be handled by this event
                             await mediator.Publish(new AppStartingEvent());
                             await mediator.Publish(new AppStartedEvent());
+                            await mediator.Send(new StartCorneyReq());
 
-                            _sw.Stop();
+
                             HostFactory.Run(x => //1
                             {
-                                x.Service<TownCrier>(s => //2
+                                x.UseAutofacContainer(scope);
+                                x.Service<TownCrier>(s =>
                                 {
-                                    s.ConstructUsing(name => new TownCrier()); //3
-                                    s.WhenStarted(tc => tc.Start()); //4
-                                    s.WhenStopped(tc => tc.Stop()); //5
-                                });
-                                x.RunAsLocalSystem(); //6
+                                    //s.ConstructUsingAutofacContainer();
+                                    s.ConstructUsing(name => new TownCrier());
+                                    s.WhenStarted(async tc =>
+                                    {
+                                        await mediator.Send(new StartCorneyReq());
+                                        tc.Start();
+                                    });
+                                    s.WhenShutdown(tc =>
+                                    {
 
-                                x.SetDescription("Sample Topshelf Host"); //7
-                                x.SetDisplayName("Stuff"); //8
-                                x.SetServiceName("Stuff"); //9
+                                        tc.Stop();
+
+                                    });
+                                    s.WhenStopped(tc =>
+                                    {
+                                        tc.Stop();
+                                        //scope?.Dispose();
+                                        //container?.Dispose();
+                                    });
+                                });
+                                x.RunAsLocalSystem();
+
+                                x.SetDescription("Corney - Crontab file executor for Windows");
+                                x.SetDisplayName("Corney");
+                                x.SetServiceName("Corney");
                             });
                         }
                     }

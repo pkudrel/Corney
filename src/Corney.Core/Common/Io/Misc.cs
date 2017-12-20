@@ -5,7 +5,7 @@ using System.Threading;
 using Newtonsoft.Json;
 using NLog;
 
-namespace Common.Io
+namespace Corney.Core.Common.Io
 {
     public static class Misc
     {

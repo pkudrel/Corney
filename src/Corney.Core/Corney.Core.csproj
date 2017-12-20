@@ -33,6 +33,9 @@
     <Reference Include="Autofac, Version=4.6.2.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.6.2\lib\net45\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Cronos, Version=0.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cronos.0.6.3\lib\net45\Cronos.dll</HintPath>
+    </Reference>
     <Reference Include="MediatR, Version=4.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MediatR.4.0.1\lib\net45\MediatR.dll</HintPath>
     </Reference>
@@ -47,9 +50,18 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -81,11 +93,27 @@
     <Compile Include="Common\Io\Misc.cs" />
     <Compile Include="Common\Version\AppVersion.cs" />
     <Compile Include="Common\Version\VersionGenerator.cs" />
+    <Compile Include="Consts.cs" />
+    <Compile Include="Features\App\Modules\CorneyConfig.cs" />
+    <Compile Include="Features\App\Modules\CorneyRegistry.cs" />
+    <Compile Include="Features\Cron\Configs\AutofacModule.cs" />
+    <Compile Include="Features\Cron\Handlers\CronaHandlers.cs" />
+    <Compile Include="Features\Cron\Models\CronDefinition.cs" />
+    <Compile Include="Features\Cron\ReqRes\StartCroneyReq.cs" />
+    <Compile Include="Features\Cron\Service\CronService.cs" />
+    <Compile Include="Features\Cron\Service\CrontabFileParser.cs" />
+    <Compile Include="Features\Monitors\Config\AutofacModule.cs" />
+    <Compile Include="Features\Monitors\Helpers\FileWatchHelpers.cs" />
+    <Compile Include="Features\Monitors\ReqRes\CrontabFileIsChanged.cs" />
+    <Compile Include="Features\Monitors\Services\ConfigFileMonitor.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Monitors\Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

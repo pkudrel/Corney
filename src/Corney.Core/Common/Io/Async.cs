@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Io
+namespace Corney.Core.Common.Io
 {
     public class Async
     {

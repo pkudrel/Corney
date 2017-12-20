@@ -1,45 +1,106 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
+using Autofac;
+using Corney.Core;
+using Corney.Core.Common.App;
+using Corney.Core.Common.App.ReqRes;
+using Corney.Core.Common.Infrastructure;
+using MediatR;
+using NLog;
 using Topshelf;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace Corney
 {
-    public class TownCrier
+    internal static class Program
     {
-        readonly Timer _timer;
-        public TownCrier()
+        private static readonly Logger _log = LogManager.GetCurrentClassLogger();
+        private static readonly Stopwatch _sw = new Stopwatch();
+
+
+        public static void Main()
         {
-            _timer = new Timer(1000) { AutoReset = true };
-            _timer.Elapsed += (sender, eventArgs) => Console.WriteLine("It is {0} and all is well", DateTime.Now);
+            _sw.Start();
+            var res = MainLowLevel();
+            if (res.Error) return;
+            MainAsync(res.Instance.Value).GetAwaiter().GetResult();
         }
-        public void Start() { _timer.Start(); }
-        public void Stop() { _timer.Stop(); }
-    }
 
-
-    class Program
-    {
-        static void Main(string[] args)
+        private static (Attempt<SingleGlobalInstance> Instance, bool Error) MainLowLevel()
         {
-            HostFactory.Run(x =>                                 //1
+            try
             {
-                x.Service<TownCrier>(s =>                        //2
+                // Only one program instance
+                var attempt = Attempt.Get(() => new SingleGlobalInstance());
+                if (attempt.Failed)
                 {
-                    s.ConstructUsing(name => new TownCrier());     //3
-                    s.WhenStarted(tc => tc.Start());              //4
-                    s.WhenStopped(tc => tc.Stop());               //5
-                });
-                x.RunAsLocalSystem();                            //6
+                    SingleInstanceHelper.ProcessFailedSingleInstance(attempt);
+                    return (null, true);
+                }
 
-                x.SetDescription("Sample Topshelf Host");        //7
-                x.SetDisplayName("Stuff");                       //8
-                x.SetServiceName("Stuff");                       //9
-            });                                                  //10
+                var currentAssembly = typeof(Program).Assembly;
+
+                // Init app internal registry 
+                Bootstrap.Instance.GetExtendedRegistry(currentAssembly);
+
+                // Add all assemblies in our scope of interest
+                AssemblyCollector.Instance.AddAssembly(currentAssembly, AssemblyInProject.View);
+                AssemblyCollector.Instance.AddAssembly(typeof(Main).Assembly, AssemblyInProject.Core);
+
+
+                return (attempt, false);
+            }
+            catch (Exception e)
+            {
+                _log.Error(e);
+                _log.Error(e.Message);
+            }
+
+            return (null, true);
         }
 
+        public static async Task MainAsync(SingleGlobalInstance instance)
+        {
+            using (instance)
+            {
+                var builder = new ContainerBuilder();
+                builder.RegisterAssemblyModules(AssemblyCollector.Instance.GetAssemblies());
+                try
+                {
+                    using (var container = builder.Build())
+                    {
+                        using (var scope = container.BeginLifetimeScope())
+                        {
+                            var mediator = scope.Resolve<IMediator>();
+
+                            // Any configuration checks, initializations should be handled by this event
+                            await mediator.Publish(new AppStartingEvent());
+                            await mediator.Publish(new AppStartedEvent());
+
+                            _sw.Stop();
+                            HostFactory.Run(x => //1
+                            {
+                                x.Service<TownCrier>(s => //2
+                                {
+                                    s.ConstructUsing(name => new TownCrier()); //3
+                                    s.WhenStarted(tc => tc.Start()); //4
+                                    s.WhenStopped(tc => tc.Stop()); //5
+                                });
+                                x.RunAsLocalSystem(); //6
+
+                                x.SetDescription("Sample Topshelf Host"); //7
+                                x.SetDisplayName("Stuff"); //8
+                                x.SetServiceName("Stuff"); //9
+                            });
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    _log.Error(e);
+                    _log.Error(e.Message);
+                }
+            }
+        }
     }
 }

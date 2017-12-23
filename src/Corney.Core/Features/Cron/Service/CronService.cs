@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Corney.Core.Features.App.Modules;
 using Corney.Core.Features.Cron.Models;
 using Corney.Core.Features.Processes.Services;
-using Microsoft.Build.Utilities;
 using NLog;
-using Logger = NLog.Logger;
 
 namespace Corney.Core.Features.Cron.Service
 {
@@ -36,18 +35,6 @@ namespace Corney.Core.Features.Cron.Service
             InitWork();
         }
 
-        private void InitWork()
-        {
-            CreateListDefinitions();
-
-            var start = DateTime.UtcNow;
-            var startDown = start.RoundDown(TimeSpan.FromSeconds(60));
-            var next = startDown.AddMinutes(1);
-            _log.Info($"Cron will be processing items from: {next}");
-            GenerateNext(next);
-            ScheduleNext(next);
-        }
-
         public void Restart()
         {
             _log.Info("Restart CronService");
@@ -59,6 +46,18 @@ namespace Corney.Core.Features.Cron.Service
         {
             _log.Info("Stop CronService");
             _nextSchedule?.Dispose();
+        }
+
+        private void InitWork()
+        {
+            CreateListDefinitions();
+
+            var start = DateTime.UtcNow;
+            var startDown = start.RoundDown(TimeSpan.FromSeconds(60));
+            var next = startDown.AddMinutes(1);
+            _log.Info($"Cron will be processing items from: {next}");
+            GenerateNext(next);
+            ScheduleNext(next);
         }
 
         private void GenerateNext(DateTime next)
@@ -108,13 +107,15 @@ namespace Corney.Core.Features.Cron.Service
                     x =>
                     {
                         _log.Debug($"ScheduleNext; Befor execute: {x}");
-                    System.Threading.Tasks.Task.Run(() => Execute(next));
+                        Task.Run(() => Execute(next));
+                        //Execute(next);
                         _log.Debug($"ScheduleNext; After execute: {x}");
                     });
         }
 
         private void CreateListDefinitions()
         {
+            _cronDefinitions.Clear();
             foreach (var crontabFile in _corneyRegistry.CrontabFiles)
             {
                 var list = CrontabFileParser.Read(crontabFile);

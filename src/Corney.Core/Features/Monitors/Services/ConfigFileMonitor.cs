@@ -79,11 +79,12 @@ namespace Corney.Core.Features.Monitors.Services
             switch (x.ChangeType)
             {
                 case WatcherChangeTypes.Created:
-                    OnCrontabFileChange(x.FullPath);
+                    
                     break;
                 case WatcherChangeTypes.Deleted:
                     break;
                 case WatcherChangeTypes.Changed:
+                    OnCrontabFileChange(x.FullPath);
                     break;
                 case WatcherChangeTypes.Renamed:
                     break;

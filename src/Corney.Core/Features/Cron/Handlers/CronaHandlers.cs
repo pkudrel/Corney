@@ -18,13 +18,15 @@ namespace Corney.Core.Features.Cron.Handlers
 
         public Task Handle(CrontabFileIsChanged notification, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            _cronService.Restart();
+            return Task.CompletedTask;
+
         }
 
 
         public Task Handle(StartCorneyReq notification, CancellationToken cancellationToken)
         {
-            _cronService.ScachuleNext();
+            _cronService.Start();
 
             return Task.CompletedTask;
         }

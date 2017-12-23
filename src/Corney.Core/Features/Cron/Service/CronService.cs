@@ -6,7 +6,9 @@ using System.Reactive.Linq;
 using Corney.Core.Features.App.Modules;
 using Corney.Core.Features.Cron.Models;
 using Corney.Core.Features.Processes.Services;
+using Microsoft.Build.Utilities;
 using NLog;
+using Logger = NLog.Logger;
 
 namespace Corney.Core.Features.Cron.Service
 {
@@ -106,7 +108,7 @@ namespace Corney.Core.Features.Cron.Service
                     x =>
                     {
                         _log.Debug($"ScheduleNext; Befor execute: {x}");
-                        Execute(next);
+                    System.Threading.Tasks.Task.Run(() => Execute(next));
                         _log.Debug($"ScheduleNext; After execute: {x}");
                     });
         }

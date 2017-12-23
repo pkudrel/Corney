@@ -7,9 +7,7 @@ using MediatR;
 
 namespace Corney.Core.Features.Cron.Handlers
 {
-    public class CronHandlers : 
-        INotificationHandler<CrontabFileIsChanged>,
-        IRequestHandler<StartCorneyReq>
+    public class CronHandlers : INotificationHandler<CrontabFileIsChanged>, INotificationHandler<StartCorneyReq>
     {
         private readonly ICronService _cronService;
 
@@ -23,10 +21,12 @@ namespace Corney.Core.Features.Cron.Handlers
             throw new System.NotImplementedException();
         }
 
-        public Task Handle(StartCorneyReq message, CancellationToken cancellationToken)
+
+        public Task Handle(StartCorneyReq notification, CancellationToken cancellationToken)
         {
-            _cronService.Start();
-            throw new System.NotImplementedException();
+            _cronService.ScachuleNext();
+
+            return Task.CompletedTask;
         }
     }
 }

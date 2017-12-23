@@ -17,8 +17,11 @@ namespace Corney
     {
         private static readonly Logger _log = LogManager.GetCurrentClassLogger();
 
-        public static void Main2()
+        public static void Main()
         {
+
+
+
             var res = MainLowLevel();
             if (res.Error) return;
             MainAsync(res.Instance.Value).GetAwaiter().GetResult();
@@ -74,8 +77,7 @@ namespace Corney
                             // Any configuration checks, initializations should be handled by this event
                             await mediator.Publish(new AppStartingEvent());
                             await mediator.Publish(new AppStartedEvent());
-                            await mediator.Send(new StartCorneyReq());
-
+                       
 
                             HostFactory.Run(x => //1
                             {
@@ -86,7 +88,7 @@ namespace Corney
                                     s.ConstructUsing(name => new TownCrier());
                                     s.WhenStarted(async tc =>
                                     {
-                                        await mediator.Send(new StartCorneyReq());
+                                        await mediator.Publish(new StartCorneyReq());
                                         tc.Start();
                                     });
                                     s.WhenShutdown(tc =>

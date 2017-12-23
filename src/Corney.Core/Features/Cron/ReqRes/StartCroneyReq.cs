@@ -2,7 +2,7 @@
 
 namespace Corney.Core.Features.Cron.ReqRes
 {
-    public class StartCorneyReq : IRequest
+    public class StartCorneyReq : INotification
     {
         
     }

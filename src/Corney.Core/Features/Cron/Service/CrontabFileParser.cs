@@ -15,7 +15,11 @@ namespace Corney.Core.Features.Cron.Service
         {
             var l = new List<CronDefinition>();
             var s = File.ReadAllLines(crontabFile);
-            var source = s.Where(x => x != null && !string.IsNullOrEmpty(x) & !x.Trim().StartsWith("#")).ToArray();
+
+            var source = s.Where(x => !string.IsNullOrEmpty(x))
+                .Select(x => x.Trim())
+                .Where(x => !string.IsNullOrEmpty(x) && !x.StartsWith("#"))
+                .ToArray();
 
             foreach (var s1 in source)
             {
@@ -27,6 +31,7 @@ namespace Corney.Core.Features.Cron.Service
                 var r = new CronDefinition(cronPart, executePart, expression, next);
                 l.Add(r);
             }
+
             return l;
         }
     }

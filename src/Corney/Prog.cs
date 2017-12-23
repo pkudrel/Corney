@@ -5,15 +5,13 @@ namespace Corney
 {
     public class Prog
     {
-        public static void Main()
+        public static void Main2()
         {
             var dt = DateTime.Now;
-            var dtNext = dt.AddSeconds(3);
+            var dtNext = dt.AddSeconds(5);
 
-            Console.WriteLine("{0} - {1}", dt, dtNext);
+            Console.WriteLine($"{dt} - {dtNext}");
 
-            var r = Observable
-                .Timer(dtNext);
 
             Observable
                 .Timer(dtNext).Timestamp()

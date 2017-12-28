@@ -6,12 +6,16 @@ namespace Corney
     public class TownCrier
     {
         readonly Timer _timer;
-        public TownCrier()
+        public TownCrier(bool executeTimer)
         {
-            _timer = new Timer(1000) { AutoReset = true };
-            _timer.Elapsed += (sender, eventArgs) => Console.WriteLine("It is {0} and all is well", DateTime.Now);
+            if (executeTimer)
+            {
+                _timer = new Timer(1000) { AutoReset = true };
+                _timer.Elapsed += (sender, eventArgs) => Console.WriteLine("It is {0} and all is well", DateTime.Now);
+            }
+
         }
-        public void Start() { _timer.Start(); }
-        public void Stop() { _timer.Stop(); }
+        public void Start() { _timer?.Start(); }
+        public void Stop() { _timer?.Stop(); }
     }
 }

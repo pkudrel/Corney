@@ -78,7 +78,6 @@
   <ItemGroup>
     <Compile Include="AppHandlers.cs" />
     <Compile Include="AppModule.cs" />
-    <Compile Include="Prog.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Features\App\Models\Config.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

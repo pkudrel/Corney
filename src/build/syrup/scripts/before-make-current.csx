@@ -1,8 +1,8 @@
 ﻿#r "System.IO"
 #r "System.Drawing"
 #r "System.Windows.Forms"
-#r "Microsoft.Win32"
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 Console.WriteLine("Execute file: befor-make-current.csx");
 

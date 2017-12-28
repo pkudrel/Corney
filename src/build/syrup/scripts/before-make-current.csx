@@ -7,9 +7,12 @@ using Microsoft.Win32;
 Console.WriteLine("Execute file: befor-make-current.csx");
 
 string appName = "Corney";
+string appDirPath = System.IO.Directory.GetParent(Syrup.CurrentAppPath).FullName;
+string mainAppDir = System.IO.Path.Combine(appDirPath, appName);
 
-string mainDirPath = System.IO.Path.Combine(Syrup.CurrentAppPath, "main");
-string corenyDir = System.IO.Path.Combine(mainDirPath, "Corney");
+string mainDirPath = System.IO.Path.Combine(mainAppDir, "main");
+
+string corenyDir = System.IO.Path.Combine(mainDirPath, appName);
 string corenyExe = System.IO.Path.Combine(corenyDir, "Corney.exe");
 
 string app = $"\"{corenyExe}\" -hide";

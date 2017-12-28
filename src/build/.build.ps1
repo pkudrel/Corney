@@ -47,9 +47,6 @@ Set-Alias MSBuild (Resolve-MSBuild)
 . (Join-Path $BL.ScriptsPath  "vendor\ps-auto-helpers\ps\assembly-tools.ps1")
 
 
-
-
-
 # Synopsis: Package-Restore
 task RestorePackage {
 

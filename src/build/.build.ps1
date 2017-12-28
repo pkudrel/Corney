@@ -23,7 +23,7 @@ param(
 	$target  = "Release",
 	$donotMarge =  @(),
 	$projectCorney  = @{
-		name = "AutoExtractor";
+		name = "Corney";
 		file = (Join-Path $BL.RepoRoot  "/src/Corney/Corney.csproj" );
 		exe = "Corney.exe";
 		dir = "Corney";
@@ -149,10 +149,10 @@ task Marge  {
 		Copy-Item "$($p.exe).config"  -Destination $margedDir 
 		
 		
-		#$src = "$scriptsPath/nlog/$($p.name).NLog.config"
-		#$dst = "$margedDir/NLog.config"
-		#"Copy fixed version NLog.config; Src: $src ; Dst: $dst "
-		#Copy-Item   $src  -Destination $dst -Force
+		$src = "$scriptsPath/nlog/$($p.name).NLog.config"
+		$dst = "$margedDir/NLog.config"
+		"Copy fixed version NLog.config; Src: $src ; Dst: $dst "
+		Copy-Item   $src  -Destination $dst -Force
 
 		
 		if([System.IO.File]::Exists("NLog.config")){

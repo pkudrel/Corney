@@ -26,7 +26,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-  
+    <Folder Include="nlog\" />
     <Folder Include="nuget\" />
     <Folder Include="syrup\" />
     <Folder Include="syrup\scripts\" />
@@ -35,6 +35,7 @@
     <Compile Include=".build.ps1" />
     <Compile Include="bl.ps1" />
     <Compile Include="nuget\nuget.nuspec" />
+    <Compile Include="nlog\Corney.NLog.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="syrup\scripts\after-make-current.csx" />

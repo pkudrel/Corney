@@ -51,7 +51,7 @@ namespace Corney.Core.Features.Cron.Service
         private void InitWork()
         {
             CreateListDefinitions();
-
+            FindNextItemToRun();
             var start = DateTime.UtcNow;
             var startDown = start.RoundDown(TimeSpan.FromSeconds(60));
             var next = startDown.AddMinutes(1);
@@ -81,19 +81,24 @@ namespace Corney.Core.Features.Cron.Service
                     processWrapper.Start(t1, "");
                 }
 
-                var nextItemToRun = _cronDefinitions
-                    .SelectMany(x => x.Value)
-                    .OrderBy(x => x.Expression.GetNextOccurrence(DateTime.UtcNow))
-                    .FirstOrDefault();
-
-                if (nextItemToRun != null)
-                    _log.Info(
-                        $"Next item to run at: {nextItemToRun.Expression.GetNextOccurrence(DateTime.UtcNow)}; " +
-                        $"Execute: {nextItemToRun.ExecutePart}");
+                FindNextItemToRun();
             }
 
             var next = date.AddMinutes(1);
             ScheduleNext(next);
+        }
+
+        private void FindNextItemToRun()
+        {
+            var nextItemToRun = _cronDefinitions
+                .SelectMany(x => x.Value)
+                .OrderBy(x => x.Expression.GetNextOccurrence(DateTime.UtcNow))
+                .FirstOrDefault();
+
+            if (nextItemToRun != null)
+                _log.Info(
+                    $"Next item to run at: {nextItemToRun.Expression.GetNextOccurrence(DateTime.UtcNow)}; " +
+                    $"Execute: {nextItemToRun.ExecutePart}");
         }
 
         private void ScheduleNext(DateTime next)

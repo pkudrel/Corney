@@ -22,7 +22,7 @@ string app = $"\"{corenyExe}\"";
 
 try
 {
-    rk = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+    var rk = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
     rk.SetValue(appName, app);
 }
 catch (Exception)

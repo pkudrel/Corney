@@ -96,9 +96,22 @@ namespace Corney.Core.Features.Cron.Service
                 .FirstOrDefault();
 
             if (nextItemToRun != null)
-                _log.Info(
-                    $"Next item to run at: {nextItemToRun.Expression.GetNextOccurrence(DateTime.UtcNow)}; " +
-                    $"Execute: {nextItemToRun.ExecutePart}");
+            {
+                var item = nextItemToRun.Expression.GetNextOccurrence(DateTime.UtcNow);
+                if (item.HasValue)
+                {
+                    _log.Info(
+                        $"Next item to run at: {item}; " +
+                        $"Next item to run at (local): {item.Value.ToLocalTime()}; " +
+                        $"Execute: {nextItemToRun.ExecutePart}");
+                }
+                else
+                {
+                    _log.Info("Canot find next item to run");
+                }
+      
+            }
+               
         }
 
         private void ScheduleNext(DateTime next)

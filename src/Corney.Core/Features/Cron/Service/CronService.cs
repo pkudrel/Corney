@@ -62,10 +62,12 @@ namespace Corney.Core.Features.Cron.Service
 
         private void GenerateNext(DateTime next)
         {
-            _log.Debug($"GenerateNext; Set next timer: {next}");
+            _log.Debug($"GenerateNext; Set next timer: {next}; local: {next.ToLocalTime()}");
             _itemsToRunOnNextMinute = _cronDefinitions
                 .SelectMany(x => x.Value).Where(x => x.Expression.GetNextOccurrence(DateTime.UtcNow) == next)
                 .ToArray();
+
+            _log.Debug($"GenerateNext; Items To Run On NextMinute count: { _itemsToRunOnNextMinute.Length}");
         }
 
         private void Execute(DateTime date)

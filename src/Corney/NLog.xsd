@@ -1140,10 +1140,10 @@
           <xs:element name="writeFooterOnArchivingOnly" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="fileName" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="archiveDateFormat" minOccurs="0" maxOccurs="1" type="xs:string" />
-          <xs:element name="archiveOldFileOnScachuleNextup" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="archiveOldFileOnStartup" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="createDirs" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="fileAttributes" minOccurs="0" maxOccurs="1" type="NLog.Targets.Win32FileAttributes" />
-          <xs:element name="deleteOldFileOnScachuleNextup" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="deleteOldFileOnStartup" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="replaceFileContentsOnEachWrite" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="enableFileDelete" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="concurrentWriteAttempts" minOccurs="0" maxOccurs="1" type="xs:integer" />
@@ -1267,7 +1267,7 @@
             <xs:documentation>Value specifying the date format to use when archiving files.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="archiveOldFileOnScachuleNextup" type="xs:boolean">
+        <xs:attribute name="archiveOldFileOnStartup" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Indicates whether to archive old log file on startup.</xs:documentation>
           </xs:annotation>
@@ -1282,7 +1282,7 @@
             <xs:documentation>File attributes (Windows only).</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="deleteOldFileOnScachuleNextup" type="xs:boolean">
+        <xs:attribute name="deleteOldFileOnStartup" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Indicates whether to delete old log file on startup.</xs:documentation>
           </xs:annotation>

@@ -103,6 +103,7 @@
     <Compile Include="Features\Cron\Models\CronDefinition.cs" />
     <Compile Include="Features\Cron\Models\ExecuteItem.cs" />
     <Compile Include="Features\Cron\ReqRes\StartCroneyReq.cs" />
+    <Compile Include="Features\Cron\ReqRes\StopCorneyReq.cs" />
     <Compile Include="Features\Cron\Service\CronService.cs" />
     <Compile Include="Features\Cron\Service\CrontabFileParser.cs" />
     <Compile Include="Features\Monitors\Config\AutofacModule.cs" />

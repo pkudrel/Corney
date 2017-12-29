@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corney", "Corney\Corney.csproj", "{CC823F98-0A7D-4440-ABFA-F4DD2E79E071}"
-EndProject
 Project("{F5034706-568F-408A-B7B3-4D38C6DB8A32}") = "build", "build\build.pssproj", "{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{2B2EDE28-71AA-4090-982D-EB9C0F16C2BF}"
@@ -16,16 +14,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corney.Core", "Corney.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corney.Tests", "Corney.Tests\Corney.Tests.csproj", "{EF36908A-C6D5-409F-9091-057B9295663A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corney", "Corney\Corney.csproj", "{47A14505-3938-41CE-B035-2EF1AE5C1BF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CC823F98-0A7D-4440-ABFA-F4DD2E79E071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC823F98-0A7D-4440-ABFA-F4DD2E79E071}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CC823F98-0A7D-4440-ABFA-F4DD2E79E071}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC823F98-0A7D-4440-ABFA-F4DD2E79E071}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,6 +34,10 @@ Global
 		{EF36908A-C6D5-409F-9091-057B9295663A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF36908A-C6D5-409F-9091-057B9295663A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF36908A-C6D5-409F-9091-057B9295663A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47A14505-3938-41CE-B035-2EF1AE5C1BF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47A14505-3938-41CE-B035-2EF1AE5C1BF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47A14505-3938-41CE-B035-2EF1AE5C1BF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47A14505-3938-41CE-B035-2EF1AE5C1BF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

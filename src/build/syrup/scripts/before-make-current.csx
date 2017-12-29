@@ -2,30 +2,32 @@
 #r "System.Drawing"
 #r "System.Windows.Forms"
 using System.Windows.Forms;
+
+using System.Diagnostics;
 using Microsoft.Win32;
 
 Console.WriteLine("Execute file: befor-make-current.csx");
 
 string appName = "Corney";
-string appDirPath = System.IO.Directory.GetParent(Syrup.CurrentAppPath).FullName;
-string mainAppDir = System.IO.Path.Combine(appDirPath, appName);
 
-string mainDirPath = System.IO.Path.Combine(mainAppDir, "main");
-
-string corenyDir = System.IO.Path.Combine(mainDirPath, appName);
-string corenyExe = System.IO.Path.Combine(corenyDir, "Corney.exe");
-
-string app = $"\"{corenyExe}\" -hide";
-
-var path = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
-var rk = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
 
 try
 {
-    rk = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-    rk.SetValue(appName, app);
+    foreach (var process in Process.GetProcessesByName(appName))
+    {
+        process.Kill();
+    }
+
 }
-catch (Exception)
+catch (System.Exception)
 {
-    return false;
+
+    throw;
 }
+
+
+
+
+
+
+

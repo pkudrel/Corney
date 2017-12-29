@@ -63,11 +63,14 @@ namespace Corney.Core.Features.Cron.Service
         private void GenerateNext(DateTime next)
         {
             _log.Debug($"GenerateNext; Set next timer: {next}; local: {next.ToLocalTime()}");
+
+            // Dates in cron file are in "local time". We should conver next to local time. 
+            var nextLocal = next.ToLocalTime();
             _itemsToRunOnNextMinute = _cronDefinitions
-                .SelectMany(x => x.Value).Where(x => x.Expression.GetNextOccurrence(DateTime.UtcNow) == next)
+                .SelectMany(x => x.Value).Where(x => x.Expression.GetNextOccurrence(DateTime.UtcNow) == nextLocal)
                 .ToList();
 
-            _log.Debug($"GenerateNext; Items To Run On NextMinute count: { _itemsToRunOnNextMinute.Count}");
+            _log.Debug($"GenerateNext; Items to run on next minute count: { _itemsToRunOnNextMinute.Count}");
         }
 
         private void Execute(DateTime date)
@@ -85,7 +88,7 @@ namespace Corney.Core.Features.Cron.Service
                 _itemsToRunOnNextMinute.Clear();
                 FindNextItemToRun();
             }
-          
+
 
             var next = date.AddMinutes(1);
             ScheduleNext(next);
@@ -112,9 +115,9 @@ namespace Corney.Core.Features.Cron.Service
                 {
                     _log.Info("Canot find next item to run");
                 }
-      
+
             }
-               
+
         }
 
         private void ScheduleNext(DateTime next)

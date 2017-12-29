@@ -20,7 +20,7 @@ namespace Corney.Core.Features.Cron.Service
         private readonly Dictionary<string, List<CronDefinition>> _cronDefinitions =
             new Dictionary<string, List<CronDefinition>>(StringComparer.OrdinalIgnoreCase);
 
-        private CronDefinition[] _itemsToRunOnNextMinute;
+        private List<CronDefinition> _itemsToRunOnNextMinute;
         private IDisposable _nextSchedule;
 
         public CronService(CorneyRegistry corneyRegistry)
@@ -65,9 +65,9 @@ namespace Corney.Core.Features.Cron.Service
             _log.Debug($"GenerateNext; Set next timer: {next}; local: {next.ToLocalTime()}");
             _itemsToRunOnNextMinute = _cronDefinitions
                 .SelectMany(x => x.Value).Where(x => x.Expression.GetNextOccurrence(DateTime.UtcNow) == next)
-                .ToArray();
+                .ToList();
 
-            _log.Debug($"GenerateNext; Items To Run On NextMinute count: { _itemsToRunOnNextMinute.Length}");
+            _log.Debug($"GenerateNext; Items To Run On NextMinute count: { _itemsToRunOnNextMinute.Count}");
         }
 
         private void Execute(DateTime date)
@@ -82,9 +82,10 @@ namespace Corney.Core.Features.Cron.Service
                     var t1 = Pharse.Tokenize(cronDefinition.ExecutePart);
                     processWrapper.Start(t1, "");
                 }
-
+                _itemsToRunOnNextMinute.Clear();
                 FindNextItemToRun();
             }
+          
 
             var next = date.AddMinutes(1);
             ScheduleNext(next);

@@ -1,4 +1,5 @@
-﻿using Corney.Core.Common.App;
+﻿using Common.Version;
+using Corney.Core.Common.App;
 
 namespace Corney.Core.Features.App.Modules
 {
@@ -9,8 +10,9 @@ namespace Corney.Core.Features.App.Modules
         {
             ConfigFilePath = configPath;
             CrontabFiles = config.CrontabFiles;
+            AppVersion = extendedRegistry.AppVersion;
         }
-
+        public AppVersion AppVersion { get;}
         public string ConfigFilePath { get; }
         public string[] CrontabFiles { get; }
     }

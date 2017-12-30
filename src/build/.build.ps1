@@ -62,6 +62,7 @@ task Startup-TeamCity {
 		Write-Build Green "Setup TeamCity: $tvc" 
 		$s = $BL.BuildVersion.SemVer
 		"##teamcity[buildNumber '$s']"
+		"##vso[build.updatebuildnumber]$s"
 		try {
 			$max = $host.UI.RawUI.MaxPhysicalWindowSize
 			if($max) {

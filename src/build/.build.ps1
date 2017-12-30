@@ -55,7 +55,14 @@ task RestorePackage {
 	exec {  &$nuget restore $sln  }
 }
 
-task Startup-TeamCity {
+task Startup-BuildServer {
+
+	if($env:AGENT_ID){
+		Write-Build Green "Setup VSTS: $tvc" 
+		$s = $BL.BuildVersion.SemVer
+		"##vso[build.updatebuildnumber]$s"
+
+	}
 
 	if ($env:TEAMCITY_VERSION) {
 		$tvc = $env:TEAMCITY_VERSION
@@ -389,7 +396,7 @@ function GetFileFromDropbox ($apiKey, $filePath) {
 
 # Synopsis: Build and clean.
 
-task Startup  Startup-TeamCity, CheckTools
+task Startup  Startup-BuildServer, CheckTools
 task BuildTask RestorePackage,  Build
 task Publish Publish-Local, Publish-TeamCity
 task . Startup, BuildTask, Marge, Make-Nuget,  Publish

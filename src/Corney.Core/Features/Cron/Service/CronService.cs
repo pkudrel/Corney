@@ -108,15 +108,15 @@ namespace Corney.Core.Features.Cron.Service
         {
             var nextItemToRun = _cronDefinitions
                 .SelectMany(x => x.Value)
-                .OrderBy(x => x.Expression.GetNextOccurrence(DateTime.UtcNow))
+                .OrderBy(x => x.Expression.GetNextOccurrence(DateTimeOffset.Now, TimeZoneInfo.Local))
                 .FirstOrDefault();
 
             if (nextItemToRun != null)
             {
-                var item = nextItemToRun.Expression.GetNextOccurrence(DateTime.UtcNow);
+                var item = nextItemToRun.Expression.GetNextOccurrence(DateTimeOffset.Now, TimeZoneInfo.Local);
                 if (item.HasValue)
                     _log.Info(
-                        $"Next item to run at; Local: {item.Value.ToLocalTime()}; Utc: {item.Value}; " +
+                        $"Next item to run at; Local: {item?.DateTime}; Utc: {item?.DateTime.ToUniversalTime()}; " +
                         $"Execute: {nextItemToRun.ExecutePart}");
                 else
                     _log.Info("Canot find next item to run");

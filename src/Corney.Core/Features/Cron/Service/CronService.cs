@@ -56,13 +56,13 @@ namespace Corney.Core.Features.Cron.Service
             var startDown = start.RoundDown(TimeSpan.FromSeconds(60));
             var next = startDown.AddMinutes(1);
             _log.Info($"Cron will be processing items from; Local: {next.ToLocalTime()}; Utc: {next}");
+            WriteTasksToLog();
             GenerateNext(next);
             ScheduleNext(next);
         }
 
         private void GenerateNext(DateTime next)
         {
-
             // Dates in cron file are in "local time". We should conver next to local time. 
             var nextLocal = next.ToLocalTime();
             _itemsToRunOnNextMinute = _cronDefinitions
@@ -102,6 +102,29 @@ namespace Corney.Core.Features.Cron.Service
             var next = date.AddMinutes(1);
             GenerateNext(next);
             ScheduleNext(next);
+        }
+
+
+        private void WriteTasksToLog()
+        {
+            var list = new List<(string, DateTimeOffset)>();
+            var from = DateTimeOffset.Now;
+            var to = DateTimeOffset.Now.AddHours(24);
+            _log.Debug($"Jobs (first 5 tasks every job from crontab file) Range; form: {from } to: {to}; ");
+            foreach (var cronDefinition in _cronDefinitions.Values.SelectMany(x=>x))
+            {
+              
+                var occurrence = cronDefinition.Expression.GetOccurrences(
+                    from,
+                    to, TimeZoneInfo.Local,
+                    true,
+                    false);
+
+                foreach (var dateTimeOffset in occurrence.Take(5)) list.Add((cronDefinition.ExecutePart, dateTimeOffset));
+            }
+
+
+            foreach (var valueTuple in list) _log.Debug($"{valueTuple.Item2} - {valueTuple.Item1}");
         }
 
         private void FindNextItemToRun()

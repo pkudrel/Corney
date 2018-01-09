@@ -55,27 +55,35 @@ namespace Corney.Core.Features.Cron.Service
             var start = DateTime.UtcNow;
             var startDown = start.RoundDown(TimeSpan.FromSeconds(60));
             var next = startDown.AddMinutes(1);
-            _log.Info($"Cron will be processing items from: {next}");
+            _log.Info($"Cron will be processing items from; Local: {next.ToLocalTime()}; Utc: {next}");
             GenerateNext(next);
             ScheduleNext(next);
         }
 
         private void GenerateNext(DateTime next)
         {
-            _log.Debug($"GenerateNext; Set next timer: {next}; local: {next.ToLocalTime()}");
 
             // Dates in cron file are in "local time". We should conver next to local time. 
             var nextLocal = next.ToLocalTime();
             _itemsToRunOnNextMinute = _cronDefinitions
-                .SelectMany(x => x.Value).Where(x => x.Expression.GetNextOccurrence(DateTime.UtcNow) == nextLocal)
+                .SelectMany(x => x.Value)
+                .Where(x =>
+                {
+                    // Read more: https://github.com/HangfireIO/Cronos#working-with-time-zones
+                    var n1 = x.Expression.GetNextOccurrence(DateTimeOffset.Now, TimeZoneInfo.Local);
+                    var nextLocalTime = n1?.DateTime;
+                    return nextLocalTime == nextLocal;
+                })
                 .ToList();
 
-            _log.Debug($"GenerateNext; Items to run on next minute count: { _itemsToRunOnNextMinute.Count}");
+
+            _log.Debug(
+                $"GenerateNext; Set next timer; Local: {next.ToLocalTime()}; Utc: {next}; Items to run on next minute count: {_itemsToRunOnNextMinute.Count}");
         }
 
         private void Execute(DateTime date)
         {
-            _log.Info($"Execute; {date} ");
+            _log.Info($"Execute; Local: {date.ToLocalTime()}; Utc: {date};");
 
             if (_itemsToRunOnNextMinute.Any())
             {
@@ -85,12 +93,14 @@ namespace Corney.Core.Features.Cron.Service
                     var t1 = Pharse.Tokenize(cronDefinition.ExecutePart);
                     processWrapper.Start(t1, "");
                 }
+
                 _itemsToRunOnNextMinute.Clear();
                 FindNextItemToRun();
             }
 
 
             var next = date.AddMinutes(1);
+            GenerateNext(next);
             ScheduleNext(next);
         }
 
@@ -105,24 +115,17 @@ namespace Corney.Core.Features.Cron.Service
             {
                 var item = nextItemToRun.Expression.GetNextOccurrence(DateTime.UtcNow);
                 if (item.HasValue)
-                {
                     _log.Info(
-                        $"Next item to run at: {item}; " +
-                        $"Next item to run at (local): {item.Value.ToLocalTime()}; " +
+                        $"Next item to run at; Local: {item.Value.ToLocalTime()}; Utc: {item.Value}; " +
                         $"Execute: {nextItemToRun.ExecutePart}");
-                }
                 else
-                {
                     _log.Info("Canot find next item to run");
-                }
-
             }
-
         }
 
         private void ScheduleNext(DateTime next)
         {
-            _log.Debug($"ScheduleNext; Set next timer: {next}");
+            _log.Debug($"ScheduleNext; Set next timer: Local: {next.ToLocalTime()}; Utc: {next}");
             var d = new DateTimeOffset(next);
             _nextSchedule = Observable
                 .Timer(d, Scheduler.CurrentThread)
@@ -130,10 +133,10 @@ namespace Corney.Core.Features.Cron.Service
                 .Subscribe(
                     x =>
                     {
-                        _log.Debug($"ScheduleNext; Befor execute: {x}");
+                        _log.Debug($"ScheduleNext; Befor execute: {x.Timestamp}");
                         Task.Run(() => Execute(next));
                         //Execute(next);
-                        _log.Debug($"ScheduleNext; After execute: {x}");
+                        //_log.Debug($"ScheduleNext; After execute: {x}");
                     });
         }
 

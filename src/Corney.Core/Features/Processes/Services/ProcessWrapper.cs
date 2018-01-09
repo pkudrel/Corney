@@ -22,8 +22,8 @@ namespace Corney.Core.Features.Processes.Services
             try
             {
                 _log.Debug("Executing: " + item.Program);
-                _log.Debug("...parameters: " + item.Arguments);
-                _log.Debug("...in directory: " + directory);
+                _log.Debug("Parameters: " + item.Arguments);
+                _log.Debug("In directory: " + directory);
 
                 process.StartInfo.FileName = item.Program;
                 process.StartInfo.Arguments = item.Arguments;

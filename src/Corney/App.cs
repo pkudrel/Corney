@@ -15,25 +15,25 @@ using NLog;
 namespace Corney
 {
     /// <summary>
-    ///     Two important functions:
-    ///     1. MainLowLevel: Check if is only one instance, create extended registry, add assemblies, etc. Any errors should be
-    ///     handled in this file. No domain configuration in any form. After this function program must have ExtendedRegistry
-    ///     object and well initialized file log
-    ///     2. MainAsync: Registration all AutoFac modules, domain configuration, start main user code
-    ///     Scenario:
-    ///     a) Registration of all AutoFac modules (module code per features should be in feature/config folder (by
-    ///     convention).
-    ///     Exception: AppModule.cs - in root. In this file you should crate Registry and other important domain objects
-    ///     b) Publishing 'AppStartingEvent' with Mediator. Domain initialization and checks. Handlers should be in
-    ///     feature/handlers folder (by convention)
-    ///     Exception: AppHandlers.cs - in root. Important checks and  initializations
+    /// Two important functions:
+    /// 1. MainLowLevel: Check if is only one instance, create extended registry, add assemblies, etc. Any errors should be
+    /// handled in this file. No domain configuration in any form. After this function program must have ExtendedRegistry
+    /// object and well initialized file log
+    /// 2. MainAsync: Registration all AutoFac modules, domain configuration, start main user code
+    /// Scenario:
+    /// a) Registration of all AutoFac modules (module code per features should be in feature/config folder (by
+    /// convention).
+    /// Exception: AppModule.cs - in root. In this file you should crate Registry and other important domain objects
+    /// b) Publishing 'AppStartingEvent' with Mediator. Domain initialization and checks. Handlers should be in
+    /// feature/handlers folder (by convention)
+    /// Exception: AppHandlers.cs - in root. Important checks and  initializations
     /// </summary>
     internal static class App
     {
         private static readonly Logger _log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        ///     The main entry point for the application.
+        /// The main entry point for the application.
         /// </summary>
         [STAThread]
         public static void Main()
@@ -71,6 +71,7 @@ namespace Corney
                 _log.Error(e.Message);
                 MessageBox.Show(e.Message, "Critical ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
             return (null, true);
         }
 
@@ -104,7 +105,7 @@ namespace Corney
 
                             Application.EnableVisualStyles();
                             Application.SetCompatibleTextRenderingDefault(false);
-                            Application.Run(new CorneyContext(registry,mediator));
+                            Application.Run(new CorneyContext(registry, mediator));
                         }
                     }
                 }

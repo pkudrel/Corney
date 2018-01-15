@@ -100,7 +100,7 @@ namespace Corney
                             // And after 
                             await mediator.Publish(new AppStartedEvent());
 
-                            await mediator.Publish(new StartCorneyReq());
+                            await mediator.Publish(new StartCorneyReq(registry.CrontabFiles));
 
 
                             Application.EnableVisualStyles();

@@ -32,7 +32,6 @@ namespace Corney
         public Task Handle(AppStartingEvent notification, CancellationToken cancellationToken)
         {
             _configFileMonitorService.Initialize();
-            ;
             return Task.CompletedTask;
         }
     }

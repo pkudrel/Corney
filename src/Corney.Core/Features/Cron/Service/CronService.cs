@@ -28,18 +28,17 @@ namespace Corney.Core.Features.Cron.Service
             _corneyRegistry = corneyRegistry;
         }
 
-        public void Start()
+        public void Start(string[] crontabFiles)
         {
             _log.Info("Start CronService");
-
-            InitWork();
+            InitWork(crontabFiles);
         }
 
-        public void Restart()
+        public void Restart(string[] cronFiles)
         {
             _log.Info("Restart CronService");
             _nextSchedule?.Dispose();
-            InitWork();
+            InitWork(cronFiles);
         }
 
         public void Stop()
@@ -48,9 +47,9 @@ namespace Corney.Core.Features.Cron.Service
             _nextSchedule?.Dispose();
         }
 
-        private void InitWork()
+        private void InitWork(string[] cronFiles)
         {
-            CreateListDefinitions();
+            CreateListDefinitions(cronFiles);
             FindNextItemToRun();
             var start = DateTime.UtcNow;
             var startDown = start.RoundDown(TimeSpan.FromSeconds(60));
@@ -110,21 +109,22 @@ namespace Corney.Core.Features.Cron.Service
             var list = new List<(string, DateTimeOffset)>();
             var from = DateTimeOffset.Now;
             var to = DateTimeOffset.Now.AddHours(24);
-            _log.Debug($"Jobs (first 5 tasks every job from crontab file) Range; form: {from } to: {to}; ");
-            foreach (var cronDefinition in _cronDefinitions.Values.SelectMany(x=>x))
+            _log.Debug($"Jobs (first 5 tasks every job from crontab file) Range; form: {from} to: {to}; ");
+            foreach (var cronDefinition in _cronDefinitions.Values.SelectMany(x => x))
             {
-              
                 var occurrence = cronDefinition.Expression.GetOccurrences(
                     from,
                     to, TimeZoneInfo.Local,
                     true,
                     false);
 
-                foreach (var dateTimeOffset in occurrence.Take(5)) list.Add((cronDefinition.ExecutePart, dateTimeOffset));
+                foreach (var dateTimeOffset in occurrence.OrderBy(x => x).Take(5))
+                    list.Add((cronDefinition.ExecutePart, dateTimeOffset));
             }
 
 
-            foreach (var valueTuple in list) _log.Debug($"{valueTuple.Item2} - {valueTuple.Item1}");
+            foreach (var valueTuple in list.OrderBy(x => x.Item2))
+                _log.Debug($"{valueTuple.Item2} - {valueTuple.Item1}");
         }
 
         private void FindNextItemToRun()
@@ -163,10 +163,10 @@ namespace Corney.Core.Features.Cron.Service
                     });
         }
 
-        private void CreateListDefinitions()
+        private void CreateListDefinitions(string[] cronFiles)
         {
             _cronDefinitions.Clear();
-            foreach (var crontabFile in _corneyRegistry.CrontabFiles)
+            foreach (var crontabFile in cronFiles)
             {
                 var list = CrontabFileParser.Read(crontabFile);
                 _cronDefinitions.Add(crontabFile, list);
@@ -176,8 +176,8 @@ namespace Corney.Core.Features.Cron.Service
 
     public interface ICronService
     {
-        void Start();
-        void Restart();
+        void Start(string[] crontabFiles);
+        void Restart(string[] crontabFiles);
         void Stop();
     }
 }

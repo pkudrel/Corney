@@ -2,12 +2,15 @@
 using System.IO;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using NLog;
 
 namespace Corney.Core.Features.Monitors.Helpers
 {
     public class FileWatchHelpers
     {
-       public static IObservable<FileSystemEventArgs> CreateForFile(string path)
+        private static readonly Logger _log = LogManager.GetCurrentClassLogger();
+
+        public static IObservable<FileSystemEventArgs> CreateForFile(string path)
         {
             var dir = Path.GetDirectoryName(path);
             var filter = Path.GetFileName(path);
@@ -36,6 +39,12 @@ namespace Corney.Core.Features.Monitors.Helpers
                         x => fsw.Deleted -= x));
 
                 disp.Add(allEvents.Throttle(TimeSpan.FromMilliseconds(250))
+                   .Finally(() =>
+                    {
+                        _log.Debug($"Finally on FileSystemEventArgsObservable: {path}");
+                        fsw.Dispose();
+
+                    })
                     .Select(x => x.EventArgs)
                     .Synchronize(subj)
                     .Subscribe(subj));

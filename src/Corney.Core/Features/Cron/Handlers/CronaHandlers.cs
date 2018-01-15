@@ -18,7 +18,7 @@ namespace Corney.Core.Features.Cron.Handlers
 
         public Task Handle(CrontabFileIsChanged notification, CancellationToken cancellationToken)
         {
-            _cronService.Restart();
+            _cronService.Restart(notification.CronFiles);
             return Task.CompletedTask;
 
         }
@@ -26,8 +26,7 @@ namespace Corney.Core.Features.Cron.Handlers
 
         public Task Handle(StartCorneyReq notification, CancellationToken cancellationToken)
         {
-            _cronService.Start();
-
+            _cronService.Start(notification.CrontabFiles);
             return Task.CompletedTask;
         }
     }

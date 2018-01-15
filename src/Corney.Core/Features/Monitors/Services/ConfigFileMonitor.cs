@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Corney.Core.Common.Io;
@@ -15,17 +16,19 @@ namespace Corney.Core.Features.Monitors.Services
     public class ConfigFileMonitorService : IDisposable
     {
         private static readonly Logger _log = LogManager.GetCurrentClassLogger();
+
+
+        private readonly List<IDisposable> _cfd =
+            new List<IDisposable>();
+
         private readonly CompositeDisposable _configDisposable = new CompositeDisposable();
-
         private readonly string _configFilePath;
-        private readonly CompositeDisposable _cronFilesDisposable = new CompositeDisposable();
 
-        private readonly List<IObservable<FileSystemEventArgs>> _cronfilesObservable =
-            new List<IObservable<FileSystemEventArgs>>();
 
         private readonly IMediator _mediator;
 
         private IObservable<FileSystemEventArgs> _configFileObservable;
+        private int counter;
 
 
         public ConfigFileMonitorService(IMediator mediator, CorneyRegistry registry)
@@ -41,19 +44,28 @@ namespace Corney.Core.Features.Monitors.Services
         {
             _log.Debug("Dispose");
             _configDisposable.Dispose();
-            _cronFilesDisposable.Dispose();
+            ClearDisposable();
         }
 
+
+        private void ClearDisposable()
+        {
+            foreach (var disposable in _cfd) disposable.Dispose();
+            _cfd.Clear();
+        }
 
         public void Initialize()
         {
             _configFileObservable = FileWatchHelpers.CreateForFile(_configFilePath);
-            _configDisposable.Add(_configFileObservable.Subscribe(ConfigMonitor));
-            OnConfigChange(_configFilePath);
+            _configDisposable.Add(_configFileObservable.Subscribe(OnConfigFileChanged));
+            var files = MonitorFilesInConfig(_configFilePath);
         }
 
-        private void ConfigMonitor(FileSystemEventArgs x)
+
+        private void OnConfigFileChanged(FileSystemEventArgs x)
         {
+            _log.Debug(
+                $"OnConfigFileChanged; Counter: {counter++}; Type: {x.ChangeType}; FullPath: {x.FullPath}; Name: {x.Name}");
             switch (x.ChangeType)
             {
                 case WatcherChangeTypes.Created:
@@ -61,7 +73,9 @@ namespace Corney.Core.Features.Monitors.Services
                 case WatcherChangeTypes.Deleted:
                     break;
                 case WatcherChangeTypes.Changed:
-                    OnConfigChange(x.FullPath);
+
+                    var files = MonitorFilesInConfig(_configFilePath);
+                    _mediator.Publish(new CrontabFileIsChanged(files));
                     break;
                 case WatcherChangeTypes.Renamed:
                     break;
@@ -70,21 +84,22 @@ namespace Corney.Core.Features.Monitors.Services
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            _log.Debug($"Type: {x.ChangeType}; FullPath: {x.FullPath}; Name: {x.Name}");
         }
 
-        private void CrontabFileMonitor(FileSystemEventArgs x)
+        private void OneCrontabFileMonitor(FileSystemEventArgs x)
         {
+            _log.Debug(
+                $"OneCrontabFileMonitor; Counter: {counter++}; Type: {x.ChangeType}; FullPath: {x.FullPath}; Name: {x.Name}");
             switch (x.ChangeType)
             {
                 case WatcherChangeTypes.Created:
-                    
+
                     break;
                 case WatcherChangeTypes.Deleted:
                     break;
                 case WatcherChangeTypes.Changed:
-                    OnCrontabFileChange(x.FullPath);
+                    var files = MonitorFilesInConfig(_configFilePath);
+                    _mediator.Publish(new CrontabFileIsChanged(files));
                     break;
                 case WatcherChangeTypes.Renamed:
                     break;
@@ -93,27 +108,32 @@ namespace Corney.Core.Features.Monitors.Services
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            _log.Debug($"Type: {x.ChangeType}; FullPath: {x.FullPath}; Name: {x.Name}");
         }
 
-        private void OnCrontabFileChange(string xFullPath)
-        {
-            _mediator.Publish(new CrontabFileIsChanged(xFullPath));
-        }
 
-        private void OnConfigChange(string file)
+        private string[] MonitorFilesInConfig(string file)
         {
-            _cronFilesDisposable.Clear();
-            _cronfilesObservable.Clear();
+            var list = new HashSet<string>();
+
+            ClearDisposable();
+
+
             var config = Misc.ReadJson<CorneyConfig>(file);
-            foreach (var filesCrontabFile in config.CrontabFiles)
+            var filesToObserve = config.CrontabFiles.Distinct().ToArray();
+            _log.Debug($"Files to monitor: {filesToObserve.Count()}");
+            var cronfilesObservable = new List<IObservable<FileSystemEventArgs>>();
+            foreach (var filesCrontabFile in filesToObserve)
             {
+                _log.Debug($"File to monitor: {filesCrontabFile}");
                 var cronFile = FileWatchHelpers.CreateForFile(filesCrontabFile);
-                _cronfilesObservable.Add(cronFile);
+                cronfilesObservable.Add(cronFile);
+                list.Add(filesCrontabFile);
             }
 
-            _configDisposable.Add(_cronfilesObservable.Merge().Subscribe(CrontabFileMonitor));
+           
+            var dis = cronfilesObservable.Merge().Subscribe(OneCrontabFileMonitor);
+            _cfd.Add(dis);
+            return list.ToArray();
         }
     }
 }
